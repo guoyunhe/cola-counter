@@ -1,18 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text } from 'react-native';
 import { CocaColaSticker, CocaColaZeroSticker } from './icons';
 import { Counter } from './components';
+import { getDailyCount, saveDailyCount } from './storage';
 
 export default function App() {
   const [countCoke, setCountCoke] = useState(0);
   const [countZero, setCountZero] = useState(0);
   
   const today = new Date();
+  const dateKey = today.toISOString().split('T')[0];
   const dateString = today.toLocaleDateString(undefined, {
     month: 'long',
     day: 'numeric',
   });
+
+  useEffect(() => {
+    async function loadData() {
+      const data = await getDailyCount(dateKey);
+      setCountCoke(data.countCoke);
+      setCountZero(data.countZero);
+    }
+    loadData();
+  }, [dateKey]);
+
+  useEffect(() => {
+    saveDailyCount(dateKey, countCoke, countZero);
+  }, [dateKey, countCoke, countZero]);
+
+  const handleIncrementCoke = () => {
+    setCountCoke(prev => prev + 1);
+  };
+
+  const handleDecrementCoke = () => {
+    setCountCoke(prev => Math.max(0, prev - 1));
+  };
+
+  const handleIncrementZero = () => {
+    setCountZero(prev => prev + 1);
+  };
+
+  const handleDecrementZero = () => {
+    setCountZero(prev => Math.max(0, prev - 1));
+  };
 
   return (
     <View style={styles.container}>
@@ -25,8 +56,8 @@ export default function App() {
         </View>
         <Counter 
           value={countCoke} 
-          onIncrement={() => setCountCoke(countCoke + 1)} 
-          onDecrement={() => setCountCoke(Math.max(0, countCoke - 1))} 
+          onIncrement={handleIncrementCoke} 
+          onDecrement={handleDecrementCoke} 
         />
       </View>
       <View style={styles.row}>
@@ -36,8 +67,8 @@ export default function App() {
         </View>
         <Counter 
           value={countZero} 
-          onIncrement={() => setCountZero(countZero + 1)} 
-          onDecrement={() => setCountZero(Math.max(0, countZero - 1))} 
+          onIncrement={handleIncrementZero} 
+          onDecrement={handleDecrementZero} 
         />
       </View>
       <StatusBar style="auto" />
