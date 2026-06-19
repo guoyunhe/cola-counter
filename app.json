@@ -27,6 +27,12 @@
       "favicon": "./assets/icon.png",
       "bundler": "metro"
     },
-    "plugins": []
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "b1611932-2e72-49c1-88e0-42d13b7df48e"
+      }
+    },
+    "owner": "guoyunhe"
   }
 }
